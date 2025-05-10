@@ -42,7 +42,7 @@ def main():
     
     parity_list = (parity1, parity2, parity3)
     if parity_list in lookup:
-        print("Apply Z to qubit: ", lookup[parity_list])
+        print(f"Apply Z to qubit: {lookup[parity_list]}")
         return 0
     else:
         print("Cannot correct error")
