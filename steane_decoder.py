@@ -40,9 +40,9 @@ def main():
         (-1, -1, -1): 2
     }
     
-    parity_list = [parity1, parity2, parity3]
-    if tuple(parity_list) in lookup:
-        print("Apply Z to qubit: ", lookup[tuple(parity_list)])
+    parity_list = (parity1, parity2, parity3)
+    if parity_list in lookup:
+        print("Apply Z to qubit: ", lookup[parity_list])
         return 0
     else:
         print("Cannot correct error")
