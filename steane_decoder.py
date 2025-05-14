@@ -3,8 +3,9 @@
 
 def main():
     syndrome = list(map(int, input("Input Syndrome: ").split()))
+    print(syndrome)
     if len(syndrome) != 7:
-        print("Invalid Syndrome")
+        print("Invalid Syndrome: Incorrect Number of Qubits")
         return 1
     
     for i in range(len(syndrome)):
