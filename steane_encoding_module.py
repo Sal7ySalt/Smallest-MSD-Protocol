@@ -123,16 +123,10 @@ class SteaneEnc(SteaneBlock):
     def preparation_results(steane_enc_block, qc_arr: list, q_num: int,  is_ideal: bool, is_counts:bool,  noise_model: NoiseModel, prep_num = 3):
 
 
-
-        # if is_ideal == True:
         qca = QuantumCircuit(q_num, q_num)
         qcb = QuantumCircuit(q_num, q_num)
         qcc = QuantumCircuit(q_num, q_num)
-        # else:
-        #     qca = QuantumCircuit(num)
-        #     qcb = QuantumCircuit(num)
-        #     qcc = QuantumCircuit(num)
-
+ 
 
 
 
@@ -161,22 +155,15 @@ class SteaneEnc(SteaneBlock):
                     steane_t = transpile(qc_arr[i], simulator)
                     job = simulator.run(steane_t, shots = 1000)
                     result = job.result()
-                    # counts = result.get_counts()
                     state = result.get_statevector()
                     state_arr.append(state)
-                    # counts_arr.append(counts)
                 else:
-                    # for j in range(0,7):
-                    #     qc_arr[i].measure(j,j)
                     qc_arr[i].save_statevector(label='state_post', pershot=True, conditional=True)
                     backend = AerSimulator(noise_model=noise_model)
                     transpiled = transpile(qc_arr[i], backend)
                     job = backend.run(transpiled, shots=1000)
                     result = job.result()
-                    # state = result.get_statevector()
-                    # state_arr.append(state)
                     state = result.data()['state_post']
-                    #print(state)
                     for shot in state['0x0']:
                         state_arr.append(shot.data)
             else:
@@ -188,6 +175,70 @@ class SteaneEnc(SteaneBlock):
                 counts_arr.append(counts_n)
 
         return [qc_arr, state_arr, counts_arr]
+    
+class SteaneDec(SteaneBlock):
+    def __init__(steane_dec_block, q_num, c_num, is_ideal):
+        super().__init__(q_num, c_num, is_ideal)
+
+    def steane_dec(steane_dec_block, q_num):
+
+        if (q_num != 7)  or  (q_num != 8):
+            raise ValueError("SteaneDec Qubit Number must be 7 or 8")
+    
+        if q_num == 8:
+            for i in range(0, 8):
+                steane_dec_block.h(i)
+            
+            steane_dec_block.barrier()
+
+            steane_dec_block.cx(5,7)
+            steane_dec_block.cx(3,7)
+            steane_dec_block.cx(1,7)
+
+            steane_dec_block.cx(3,2)
+
+            steane_dec_block.cx(4,1)
+            steane_dec_block.cx(0,3)
+
+            steane_dec_block.cx(6,5)
+            steane_dec_block.cx(4,2)
+
+            steane_dec_block.cx(6, 3)
+            steane_dec_block.cx(4, 5)
+            steane_dec_block.cx(0, 1)
+
+            steane_dec_block.barrier()
+
+            return steane_dec_block
+        elif q_num == 7:
+            
+            for i in range(0, 7):
+                steane_dec_block.h(i)
+
+            steane_dec_block.barrier()
+
+            steane_dec_block.cx(3,0)
+            steane_dec_block.cx(1,6)
+            steane_dec_block.cx(1,5)
+            steane_dec_block.cx(3,4)
+            steane_dec_block.cx(2,6)
+            steane_dec_block.cx(6,4)
+            steane_dec_block.cx(3,5)
+            steane_dec_block.cx(2,0)
+
+            steane_dec_block.cx(6,5)
+            steane_dec_block.cx(2,4)
+            steane_dec_block.cx(1,0)
+
+
+            steane_dec_block.barrier()
+
+
+            steane_dec_block.measure(6,0)
+
+
+            return steane_dec_block
+        
 
 
 
