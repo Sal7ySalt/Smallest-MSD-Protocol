@@ -111,22 +111,6 @@ DICT4_FALSE = [
     {"syndrome": [1, -1, 1, 1],   "correction": "IIIIZ"},
 ]
 
-# Function to read and validate syndrome bits
-def read_syndrome():
-    syndrome = []
-    for i in range(4):
-        # read and validate
-        try:
-            val = int(input(f"Syndrome bit {i+1}: "))
-        except ValueError:
-            print("Incorrect Stabilizer Measurement Outcome.")
-            sys.exit(1)
-        if abs(val) != 1:
-            print("Incorrect Stabilizer Measurement Outcome.")
-            sys.exit(1)
-        syndrome.append(val)
-    return syndrome
-
 # Lookup utility
 def lookup_correction(syndrome, true_dict, false_dict):
     table = true_dict if flag else false_dict
@@ -136,68 +120,19 @@ def lookup_correction(syndrome, true_dict, false_dict):
     return None
 
 # Syndrome measurement functions
-def syndrome1():
-    print("Measuring XZZXI:")
-    s = read_syndrome()
-    return lookup_correction(s, DICT1_TRUE, DICT1_FALSE)
 
-def syndrome2():
-    print("Measuring IXZZX:")
-    s = read_syndrome()
-    return lookup_correction(s, DICT2_TRUE, DICT2_FALSE)
+# XZZXI
+def syndrome1(syndrome):
+    return lookup_correction(syndrome, DICT1_TRUE, DICT1_FALSE)
 
-def syndrome3():
-    print("Measuring XIXZZ:")
-    s = read_syndrome()
-    return lookup_correction(s, DICT3_TRUE, DICT3_FALSE)
+# IXZZX
+def syndrome2(syndrome):
+    return lookup_correction(syndrome, DICT2_TRUE, DICT2_FALSE)
 
-def syndrome4():
-    print("Measuring ZXIXZ:")
-    s = read_syndrome()
-    return lookup_correction(s, DICT4_TRUE, DICT4_FALSE)
+# XIXZZ
+def syndrome3(syndrome):
+    return lookup_correction(syndrome, DICT3_TRUE, DICT3_FALSE)
 
-# Main program
-def main():
-    global flag
-    # Read flag measurement
-    try:
-        n = int(input("Enter flag measurement (1 or -1): "))
-    except ValueError:
-        print("Incorrect Flag Measurement.")
-        sys.exit(1)
-    if n == 1:
-        flag = False
-    elif n == -1:
-        flag = True
-    else:
-        print("Incorrect Flag Measurement.")
-        sys.exit(1)
-
-    # Syndrome corrections with error checks
-    corr1 = syndrome1()
-    if corr1 is None:
-        print("No valid correction for syndrome measurement 1.")
-        sys.exit(1)
-    corr2 = syndrome2()
-    if corr2 is None:
-        print("No valid correction for syndrome measurement 2.")
-        sys.exit(1)
-    corr3 = syndrome3()
-    if corr3 is None:
-        print("No valid correction for syndrome measurement 3.")
-        sys.exit(1)
-    corr4 = syndrome4()
-    if corr4 is None:
-        print("No valid correction for syndrome measurement 4.")
-        sys.exit(1)
-
-    # Print corrections
-    print(f"Correction1: {corr1}")
-    print(f"Correction2: {corr2}")
-    print(f"Correction3: {corr3}")
-    print(f"Correction4: {corr4}")
-
-
-
-if __name__ == '__main__':
-    main()
+# ZXIXZ
+def syndrome4(syndrome):
+    return lookup_correction(syndrome, DICT4_TRUE, DICT4_FALSE)
