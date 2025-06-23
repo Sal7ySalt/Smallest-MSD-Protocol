@@ -3,7 +3,7 @@ import sys
 # Global flag for phase measurement
 flag = False
 
-# Syndrome-to-correction dictionaries for syndrome1
+# Syndrome-to-correction dictionaries for XZZXI
 DICT1_TRUE = [
     {"syndrome": [1, 1, 1, 1],   "correction": "IIIII"},
     {"syndrome": [-1, -1, 1, 1],  "correction": "IXZXI"},
@@ -30,7 +30,7 @@ DICT1_FALSE = [
     {"syndrome": [-1, 1, 1, -1],  "correction": "IIIZI"},
 ]
 
-# Syndrome-to-correction dictionaries for syndrome2
+# Syndrome-to-correction dictionaries for IXZZX
 DICT2_TRUE = [
     {"syndrome": [1, 1, 1, 1],   "correction": "IIIII"},
     {"syndrome": [-1, 1, -1, 1], "correction": "IIIZX"},
@@ -57,7 +57,7 @@ DICT2_FALSE = [
     {"syndrome": [1, -1, 1, 1],   "correction": "IIIIZ"},
 ]
 
-# Syndrome-to-correction dictionaries for syndrome3
+# Syndrome-to-correction dictionaries for XIXZZ
 DICT3_TRUE = [
     {"syndrome": [1, 1, 1, 1],    "correction": "IIIII"},
     {"syndrome": [-1, -1, 1, -1], "correction": "IIIZZ"},
@@ -84,7 +84,7 @@ DICT3_FALSE = [
     {"syndrome": [1, -1, 1, 1],   "correction": "IIIIZ"},
 ]
 
-# Syndrome-to-correction dictionaries for syndrome4
+# Syndrome-to-correction dictionaries for ZXIXZ
 DICT4_TRUE = [
     {"syndrome": [1, 1, 1, 1],    "correction": "IIIII"},
     {"syndrome": [1, 1, -1, 1],   "correction": "IIIXZ"},
@@ -120,7 +120,6 @@ def lookup_correction(syndrome, true_dict, false_dict):
     return None
 
 # Syndrome measurement functions
-
 # XZZXI
 def syndrome1(syndrome):
     return lookup_correction(syndrome, DICT1_TRUE, DICT1_FALSE)
