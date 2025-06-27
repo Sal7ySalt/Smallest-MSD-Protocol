@@ -1,5 +1,3 @@
-import sys
-
 # Global flag for phase measurement
 flag = False
 
