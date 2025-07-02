@@ -1,91 +1,53 @@
-tab1_z = [{"syndrome": [1, 1, 1], "correction": "IIIIIII"},
-          {"syndrome": [-1, 1, 1], "correction": "XIIIIII"},
-          {"syndrome": [1, 1, -1], "correction": "IXIIIII"},
-          {"syndrome": [-1, 1, -1], "correction": "IIXIIII"},
-          {"syndrome": [1, -1, 1], "correction": "IIIXIII"},
-          {"syndrome": [-1, -1, 1], "correction": "IIIIXII"},
-          {"syndrome": [1, -1, -1], "correction": "IIIIIXI"},
-          {"syndrome": [-1, -1, -1], "correction": "IIIIIIX"}]
+# s1, s2, s3
+unflag_lookup_x = [{"syndrome": [0, 1, 0], "correction": "IIIIZZZ"},
+                   {"syndrome": [0, 0, 1], "correction": "IIIIZZZ"},
+                   {"syndrome": [0, 1, 1], "correction": "IIIIZZZ"}]
+# s4, s5, s6
+unflag_lookup_z = [{"syndrome": [0, 1, 0], "correction": "IIIIXXX"},
+                   {"syndrome": [0, 0, 1], "correction": "IIIIXXX"},
+                   {"syndrome": [0, 1, 1], "correction": "IIIIXXX"}]
 
-tab1_x = [{"syndrome": [1, 1, 1], "correction": "IIIIIII"},
-          {"syndrome": [-1, 1, 1], "correction": "ZIIIIII"},
-          {"syndrome": [1, 1, -1], "correction": "IZIIIII"},
-          {"syndrome": [-1, 1, -1], "correction": "IIZIIII"},
-          {"syndrome": [1, -1, 1], "correction": "IIIZIII"},
-          {"syndrome": [-1, -1, 1], "correction": "IIIIZII"},
-          {"syndrome": [1, -1, -1], "correction": "IIIIIZI"},
-          {"syndrome": [-1, -1, -1], "correction": "IIIIIIZ"}]
+# fs1, fs2, fs3, s1, s2, s3
+flag_lookup_x = [{"syndrome": [1, 0, 0, 0, 1, 0], "correction": "IIIIZZZ"},
+                 {"syndrome": [1, 0, 0, 0, 0, 1], "correction": "IIIIZZZ"},
+                 {"syndrome": [0, 1, 1, 0, 0, 1], "correction": "IIIIZZZ"}]
 
-tab2_z = [{"syndrome": [1, -1, 1], "correction": "IIXIIIX"},
-          {"syndrome": [1, 1, -1], "correction": "IIIXIXI"}]
+# fs4, fs5, fs6, s4, s5, s6
+flag_lookup_z = [{"syndrome": [1, 0, 0, 0, 1, 0], "correction": "IIIIXXX"},
+                 {"syndrome": [1, 0, 0, 0, 0, 1], "correction": "IIIIXXX"},
+                 {"syndrome": [0, 1, 1, 0, 0, 1], "correction": "IIIIXXX"}]
 
-tab2_x = [{"syndrome": [1, -1, 1], "correction": "IIZIIIZ"},
-          {"syndrome": [1, 1, -1], "correction": "IIIZIZI"}]
-
-def find_no_flag_syndrome(no_flag_allqubits_z, no_flag_allqubits_x):
-    parity1_z = 1
-    for i in [0, 2, 4, 6]:
-        parity1_z *= no_flag_allqubits_z[i]
-
-    parity2_z = 1
-    for i in [3, 4, 5, 6]:
-        parity2_z *= no_flag_allqubits_z[i]
-        
-    parity3_z = 1
-    for i in [1, 2, 5, 6]:
-        parity3_z *= no_flag_allqubits_z[i]
-        
-    parity1_x = 1
-    for i in [0, 2, 4, 6]:
-        parity1_x *= no_flag_allqubits_x[i]
-
-    parity2_x = 1
-    for i in [3, 4, 5, 6]:
-        parity2_x *= no_flag_allqubits_x[i]
-        
-    parity3_x = 1
-    for i in [1, 2, 5, 6]:
-        parity3_x *= no_flag_allqubits_x[i]
-        
-    syndrome_no_flag_z = [parity1_z, parity2_z, parity3_z]
-    syndrome_no_flag_x = [parity1_x, parity2_x, parity3_x]
+def lookup(memory):
+    split = memory.split()
     
-    return syndrome_no_flag_z, syndrome_no_flag_x
-
-def bool_syndrome_flag(syndrome_flag_z, syndrome_flag_x):
-    if (syndrome_flag_z == [1, 1, 1] and syndrome_flag_x == [1, 1, 1]):
-        return True
-    else:
-        return False
-
-def syndrome(syndrome_flag_z, syndrome_flag_x, syndrome_no_flag_z, syndrome_no_flag_x):
-    correction_z = None
-    correction_x = None
+    syndrome_flag1 = [int(b) for b in split[2]][::-1] 
+    syndrome_unflag = [int(b) for b in split[1]][::-1]
+    syndrome_flag2 = [int(b) for b in split[0]][::-1]
     
-    if (syndrome_flag_z == syndrome_no_flag_z and syndrome_flag_x == syndrome_no_flag_x):
-        for entry in tab1_z:
-            if (entry["syndrome"] == syndrome_flag_z):
+    unflag_x = [syndrome_unflag[0], syndrome_unflag[4], syndrome_unflag[5]]
+    unflag_z = [syndrome_unflag[3], syndrome_unflag[1], syndrome_unflag[2]]
+    flag_x = [syndrome_flag1[0], syndrome_flag2[1], syndrome_flag2[2], syndrome_unflag[0], syndrome_unflag[4], syndrome_unflag[5]]
+    flag_z = [syndrome_flag2[0], syndrome_flag1[1], syndrome_flag1[2], syndrome_unflag[3], syndrome_unflag[1], syndrome_unflag[2]]
+    
+    correction_x = "IIIIIII"
+    correction_z = "IIIIIII"
+    
+    if (syndrome_flag1 == [0, 0, 0] and syndrome_flag2 == [0, 0, 0]):
+        return correction_z, correction_x
+    elif (syndrome_flag1 != [0, 0, 0]):
+        for entry in unflag_lookup_x:
+            if (entry["syndrome"] == unflag_x):
                 correction_z = entry["correction"]
-        for entry in tab1_x:
-            if (entry["syndrome"] == syndrome_flag_x):
+        for entry in unflag_lookup_z:
+            if (entry["syndrome"] == unflag_z):
                 correction_x = entry["correction"]
         return correction_z, correction_x
-    
-    for entry in tab2_z:
-        if (entry["syndrome"] == syndrome_no_flag_z):
-            correction_z = entry["correction"]
-    for entry in tab2_x:
-        if (entry["syndrome"] == syndrome_no_flag_x):
-            correction_x = entry["correction"]
-        
-    if (correction_z is None):
-        for entry in tab1_z:
-            if (entry["syndrome"] == syndrome_no_flag_z):
+    elif (syndrome_flag1 == [0, 0, 0] and syndrome_flag2 != [0, 0, 0]):
+        for entry in flag_lookup_x:
+            if (entry["syndrome"] == flag_x):
                 correction_z = entry["correction"]
-    if (correction_x is None):
-        for entry in tab1_x:
-            if (entry["syndrome"] == syndrome_no_flag_x):
+        for entry in flag_lookup_z:
+            if (entry["syndrome"] == flag_z):
                 correction_x = entry["correction"]
-            
+        return correction_z, correction_x
     return correction_z, correction_x
-    
