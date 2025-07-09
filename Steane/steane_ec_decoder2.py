@@ -1,82 +1,130 @@
-flag1_lookup = [{"syndrome": [0, 0, 0, 0, 1, 0], "correction": "IIXXIII"},
-                {"syndrome": [0, 0, 0, 1, 0, 0], "correction": "IXXXIII"},
-                {"syndrome": [1, 1, 0, 1, 0, 0], "correction": "IYXXIII"},
-                {"syndrome": [1, 1, 0, 0, 1, 0], "correction": "IZXXIII"},
-                {"syndrome": [0, 0, 0, 1, 0, 1], "correction": "IIIXIII"},
-                {"syndrome": [1, 1, 1, 0, 1, 0], "correction": "IIYXIII"},
-                {"syndrome": [1, 1, 1, 1, 0, 1], "correction": "IIZXIII"}]
+flag1_lookup = [{"syndrome": '000010', "correction": "IIXXIII"},
+                {"syndrome": '000100', "correction": "IXXXIII"},
+                {"syndrome": '110100', "correction": "IYXXIII"},
+                {"syndrome": '110010', "correction": "IZXXIII"},
+                {"syndrome": '000101', "correction": "IIIXIII"},
+                {"syndrome": '111010', "correction": "IIYXIII"},
+                {"syndrome": '111101', "correction": "IIZXIII"}]
 
-weight1err_lookup = [{"syndrome": [0, 0, 0, 1, 0, 0], "correction": "XIIIIII"},
-                     {"syndrome": [1, 0, 0, 0, 0, 0], "correction": "ZIIIIII"},
-                     {"syndrome": [1, 0, 0, 1, 0, 0], "correction": "ZXXXIII"},
-                     {"syndrome": [0, 0, 0, 1, 1, 0], "correction": "IXIIIII"},
-                     {"syndrome": [1, 1, 0, 1, 1, 0], "correction": "IYIIIII"},
-                     {"syndrome": [1, 1, 0, 0, 0, 0], "correction": "IZIIIII"},
-                     {"syndrome": [0, 0, 0, 1, 1, 1], "correction": "IIXIIII"},
-                     {"syndrome": [1, 1, 1, 1, 1, 1], "correction": "IIYIIII"},
-                     {"syndrome": [1, 1, 1, 0, 0, 0], "correction": "IIZIIII"},
-                     {"syndrome": [0, 0, 0, 1, 0, 1], "correction": "IIIXIII"},
-                     {"syndrome": [1, 0, 1, 1, 0, 1], "correction": "IIIYIII"},
-                     {"syndrome": [1, 0, 1, 0, 0, 0], "correction": "IIIZIII"},
-                     {"syndrome": [0, 0, 0, 0, 1, 0], "correction": "IIIIXII"},
-                     {"syndrome": [0, 1, 0, 0, 1, 0], "correction": "IIIIYII"},
-                     {"syndrome": [0, 1, 0, 0, 0, 0], "correction": "IIIIZII"},
-                     {"syndrome": [0, 0, 0, 0, 1, 1], "correction": "IIIIIXI"},
-                     {"syndrome": [0, 1, 1, 0, 1, 1], "correction": "IIIIIYI"},
-                     {"syndrome": [0, 1, 1, 0, 0, 0], "correction": "IIIIIZI"},
-                     {"syndrome": [0, 0, 0, 0, 0, 1], "correction": "IIIIIIX"},
-                     {"syndrome": [0, 0, 1, 0, 0, 1], "correction": "IIIIIIY"},
-                     {"syndrome": [0, 0, 1, 0, 0, 0], "correction": "IIIIIIZ"},
-                     {"syndrome": [0, 0, 0, 1, 0, 0], "correction": "XIIIIII"},
-                     {"syndrome": [1, 0, 0, 1, 0, 0], "correction": "YIIIIII"}]
+weight1err_lookup = [{"syndrome": '000100', "correction": "XIIIIII"},
+                     {"syndrome": '100000', "correction": "ZIIIIII"},
+                     {"syndrome": '100100', "correction": "ZXXXIII"},
+                     {"syndrome": '000110', "correction": "IXIIIII"},
+                     {"syndrome": '110110', "correction": "IYIIIII"},
+                     {"syndrome": '110000', "correction": "IZIIIII"},
+                     {"syndrome": '000111', "correction": "IIXIIII"},
+                     {"syndrome": '111111', "correction": "IIYIIII"},
+                     {"syndrome": '111000', "correction": "IIZIIII"},
+                     {"syndrome": '000101', "correction": "IIIXIII"},
+                     {"syndrome": '101101', "correction": "IIIYIII"},
+                     {"syndrome": '101000', "correction": "IIIZIII"},
+                     {"syndrome": '000010', "correction": "IIIIXII"},
+                     {"syndrome": '010010', "correction": "IIIIYII"},
+                     {"syndrome": '010000', "correction": "IIIIZII"},
+                     {"syndrome": '000011', "correction": "IIIIIXI"},
+                     {"syndrome": '011011', "correction": "IIIIIYI"},
+                     {"syndrome": '011000', "correction": "IIIIIZI"},
+                     {"syndrome": '000001', "correction": "IIIIIIX"},
+                     {"syndrome": '001001', "correction": "IIIIIIY"},
+                     {"syndrome": '001000', "correction": "IIIIIIZ"},
+                     {"syndrome": '000100', "correction": "XIIIIII"},
+                     {"syndrome": '100100', "correction": "YIIIIII"}]
                     
 
-flag2_lookup = [{"syndrome": [0, 0, 0, 0, 0, 1], "correction": "IIIIXXI"},
-                {"syndrome": [0, 0, 0, 1, 1, 0], "correction": "IIXIXXI"},
-                {"syndrome": [1, 1, 1, 1, 1, 0], "correction": "IIYIXXI"},
-                {"syndrome": [1, 1, 1, 0, 0, 1], "correction": "IIZIXXI"},
-                {"syndrome": [0, 0, 0, 0, 1, 1], "correction": "IIIIIXI"},
-                {"syndrome": [0, 1, 0, 0, 0, 1], "correction": "IIIIYXI"},
-                {"syndrome": [0, 1, 0, 0, 1, 1], "correction": "IIIIZXI"}]
+flag2_lookup = [{"syndrome": '000001', "correction": "IIIIXXI"},
+                {"syndrome": '000110', "correction": "IIXIXXI"},
+                {"syndrome": '111110', "correction": "IIYIXXI"},
+                {"syndrome": '111001', "correction": "IIZIXXI"},
+                {"syndrome": '000011', "correction": "IIIIIXI"},
+                {"syndrome": '010001', "correction": "IIIIYXI"},
+                {"syndrome": '010011', "correction": "IIIIZXI"}]
 
 
-flag3_lookup = [{"syndrome": [0, 0, 0, 0, 1, 0], "correction": "IIIIIXX"},
-                {"syndrome": [0, 0, 0, 1, 1, 1], "correction": "IIIXIXX"},
-                {"syndrome": [1, 0, 1, 1, 1, 1], "correction": "IIIYIXX"},
-                {"syndrome": [1, 0, 1, 0, 0, 0], "correction": "IIIZIXX"},
-                {"syndrome": [0, 0, 0, 0, 0, 1], "correction": "IIIIIIX"},
-                {"syndrome": [0, 1, 1, 0, 1, 0], "correction": "IIIIIYX"},
-                {"syndrome": [0, 1, 1, 0, 0, 1], "correction": "IIIIIZX"}]
+flag3_lookup = [{"syndrome": '000010', "correction": "IIIIIXX"},
+                {"syndrome": '000111', "correction": "IIIXIXX"},
+                {"syndrome": '101111', "correction": "IIIYIXX"},
+                {"syndrome": '101000', "correction": "IIIZIXX"},
+                {"syndrome": '000001', "correction": "IIIIIIX"},
+                {"syndrome": '011010', "correction": "IIIIIYX"},
+                {"syndrome": '011001', "correction": "IIIIIZX"}]
 
-flag4_lookup = [{"syndrome": [0, 1, 0, 0, 0, 0], "correction": "IIZZIII"},
-                {"syndrome": [0, 1, 0, 1, 1, 0], "correction": "IXZZIII"},
-                {"syndrome": [1, 0, 0, 1, 1, 0], "correction": "IYZZIII"},
-                {"syndrome": [1, 0, 0, 0, 0, 0], "correction": "IZZZIII"},
-                {"syndrome": [1, 0, 1, 0, 0, 0], "correction": "IIIZIII"},
-                {"syndrome": [1, 0, 1, 1, 1, 1], "correction": "IIXZIII"},
-                {"syndrome": [0, 1, 0, 1, 1, 1], "correction": "IIYZIII"}]
+flag4_lookup = [{"syndrome": '010000', "correction": "IIZZIII"},
+                {"syndrome": '010110', "correction": "IXZZIII"},
+                {"syndrome": '100110', "correction": "IYZZIII"},
+                {"syndrome": '100000', "correction": "IZZZIII"},
+                {"syndrome": '101000', "correction": "IIIZIII"},
+                {"syndrome": '101111', "correction": "IIXZIII"},
+                {"syndrome": '010111', "correction": "IIYZIII"}]
 
-flag5_lookup = [{"syndrome": [0, 0, 1, 0, 0, 0], "correction": "IIIIZZI"},
-                {"syndrome": [0, 0, 1, 1, 1, 1], "correction": "IIXIZZI"},
-                {"syndrome": [1, 1, 0, 1, 1, 1], "correction": "IIYIZZI"},
-                {"syndrome": [1, 1, 0, 0, 0, 0], "correction": "IIZIZZI"},
-                {"syndrome": [0, 1, 1, 0, 0, 0], "correction": "IIIIIZI"},
-                {"syndrome": [0, 1, 1, 0, 1, 0], "correction": "IIIIXZI"},
-                {"syndrome": [0, 0, 1, 0, 1, 0], "correction": "IIIIYZI"}]
+flag5_lookup = [{"syndrome": '001000', "correction": "IIIIZZI"},
+                {"syndrome": '001111', "correction": "IIXIZZI"},
+                {"syndrome": '110111', "correction": "IIYIZZI"},
+                {"syndrome": '110000', "correction": "IIZIZZI"},
+                {"syndrome": '011000', "correction": "IIIIIZI"},
+                {"syndrome": '011010', "correction": "IIIIXZI"},
+                {"syndrome": '001010', "correction": "IIIIYZI"}]
 
-flag6_lookup = [{"syndrome": [0, 1, 0, 0, 0, 0], "correction": "IIIIIZZ"},
-                {"syndrome": [0, 1, 0, 1, 0, 1], "correction": "IIIXIZZ"},
-                {"syndrome": [1, 1, 1, 1, 0, 1], "correction": "IIIYIZZ"},
-                {"syndrome": [1, 1, 1, 0, 0, 0], "correction": "IIIZIZZ"},
-                {"syndrome": [0, 0, 1, 0, 0, 0], "correction": "IIIIIIZ"},
-                {"syndrome": [0, 0, 1, 0, 1, 1], "correction": "IIIIIXZ"},
-                {"syndrome": [0, 1, 0, 0, 1, 1], "correction": "IIIIIYZ"}]
+flag6_lookup = [{"syndrome": '010000', "correction": "IIIIIZZ"},
+                {"syndrome": '010101', "correction": "IIIXIZZ"},
+                {"syndrome": '111101', "correction": "IIIYIZZ"},
+                {"syndrome": '111000', "correction": "IIIZIZZ"},
+                {"syndrome": '001000', "correction": "IIIIIIZ"},
+                {"syndrome": '001011', "correction": "IIIIIXZ"},
+                {"syndrome": '010011', "correction": "IIIIIYZ"}]
 
 def allstab_lookup(memory):
-    syndrome = [int (b) for b in memory][::-1]
-    correction = "IIIIIII"
-    
-    for entry in weight1err_lookup:
-        if (entry == syndrome):
-            correction = entry["correction"]
-    return correction
+    split = memory[0].split()
+    flags = [split[11], split[9], split[7], split[5], split[3], split[1]]
+    reversed_flags = [f[::-1] for f in flags]
+    syndromes = [split[10], split[8], split[6], split[4], split[2], split[0]]
+    reversed_syndromes = [s[::-1] for s in syndromes]
+    corrections = []
+    for i, flag in enumerate(reversed_flags):
+        correction = "IIIIIII"
+        if (flag == '00'):
+            corrections.append(correction)
+            continue
+        elif (flag == '10'):
+            for entry in weight1err_lookup:
+                if (entry["syndrome"] == reversed_syndromes[i]):
+                    correction = entry["correction"]
+            corrections.append(correction)
+            continue
+        elif (i == 0):
+            for entry in flag1_lookup:
+                if (entry["syndrome"] == reversed_syndromes[i]):
+                    correction = entry["correction"]
+            corrections.append(correction)
+            continue
+        elif (i == 1):
+            for entry in flag2_lookup:
+                if (entry["syndrome"] == reversed_syndromes[i]):
+                    correction = entry["correction"]
+            corrections.append(correction)
+            continue
+        elif (i == 2):
+            for entry in flag3_lookup:
+                if (entry["syndrome"] == reversed_syndromes[i]):
+                    correction = entry["correction"]
+            corrections.append(correction)
+            continue
+        elif (i == 3):
+            for entry in flag4_lookup:
+                if (entry["syndrome"] == reversed_syndromes[i]):
+                    correction = entry["correction"]
+            corrections.append(correction)
+            continue
+        elif (i == 4):
+            for entry in flag5_lookup:
+                if (entry["syndrome"] == reversed_syndromes[i]):
+                    correction = entry["correction"]
+            corrections.append(correction)
+            continue
+        elif (i == 5):
+            for entry in flag6_lookup:
+                if (entry["syndrome"] == reversed_syndromes[i]):
+                    correction = entry["correction"]
+            corrections.append(correction)
+            continue
+            
+    return corrections
