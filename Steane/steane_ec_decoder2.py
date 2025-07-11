@@ -42,6 +42,8 @@ def lookup(memory):
             if (entry["syndrome"] == flag_syndrome_z):
                 correction_x = entry["correction"]
     else:
+        correction_x = None
+        """
         for entry in tab2_z:
             if (entry["syndrome"] == unflag_syndrome_z):
                 correction_x = entry["correction"]
@@ -49,6 +51,7 @@ def lookup(memory):
             for entry in tab1_z:
                 if (entry["syndrome"] == unflag_syndrome_z):
                     correction_x = entry["correction"]
+                """
 
     # finding correction_z
     if (flag_syndrome_x == unflag_syndrome_x):
@@ -56,6 +59,8 @@ def lookup(memory):
             if (entry["syndrome"] == flag_syndrome_x):
                 correction_z = entry["correction"]
     else:
+        correction_z = None
+        """
         for entry in tab2_x:
             if (entry["syndrome"] == unflag_syndrome_x):
                 correction_z = entry["correction"]
@@ -63,5 +68,6 @@ def lookup(memory):
             for entry in tab1_x:
                 if (entry["syndrome"] == unflag_syndrome_x):
                     correction_z = entry["correction"]
+                """
                     
     return correction_x, correction_z
