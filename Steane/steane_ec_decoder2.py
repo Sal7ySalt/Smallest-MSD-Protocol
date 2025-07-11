@@ -1,130 +1,67 @@
-flag1_lookup = [{"syndrome": '000010', "correction": "IIXXIII"},
-                {"syndrome": '000100', "correction": "IXXXIII"},
-                {"syndrome": '110100', "correction": "IYXXIII"},
-                {"syndrome": '110010', "correction": "IZXXIII"},
-                {"syndrome": '000101', "correction": "IIIXIII"},
-                {"syndrome": '111010', "correction": "IIYXIII"},
-                {"syndrome": '111101', "correction": "IIZXIII"}]
+tab1_z = [{"syndrome": [0, 0, 0], "correction": "IIIIIII"},
+          {"syndrome": [1, 0, 0], "correction": "XIIIIII"},
+          {"syndrome": [0, 0, 1], "correction": "IXIIIII"},
+          {"syndrome": [1, 0, 1], "correction": "IIXIIII"},
+          {"syndrome": [0, 1, 0], "correction": "IIIXIII"},
+          {"syndrome": [1, 1, 0], "correction": "IIIIXII"},
+          {"syndrome": [0, 1, 1], "correction": "IIIIIXI"},
+          {"syndrome": [1, 1, 1], "correction": "IIIIIIX"}]
 
-weight1err_lookup = [{"syndrome": '000100', "correction": "XIIIIII"},
-                     {"syndrome": '100000', "correction": "ZIIIIII"},
-                     {"syndrome": '100100', "correction": "ZXXXIII"},
-                     {"syndrome": '000110', "correction": "IXIIIII"},
-                     {"syndrome": '110110', "correction": "IYIIIII"},
-                     {"syndrome": '110000', "correction": "IZIIIII"},
-                     {"syndrome": '000111', "correction": "IIXIIII"},
-                     {"syndrome": '111111', "correction": "IIYIIII"},
-                     {"syndrome": '111000', "correction": "IIZIIII"},
-                     {"syndrome": '000101', "correction": "IIIXIII"},
-                     {"syndrome": '101101', "correction": "IIIYIII"},
-                     {"syndrome": '101000', "correction": "IIIZIII"},
-                     {"syndrome": '000010', "correction": "IIIIXII"},
-                     {"syndrome": '010010', "correction": "IIIIYII"},
-                     {"syndrome": '010000', "correction": "IIIIZII"},
-                     {"syndrome": '000011', "correction": "IIIIIXI"},
-                     {"syndrome": '011011', "correction": "IIIIIYI"},
-                     {"syndrome": '011000', "correction": "IIIIIZI"},
-                     {"syndrome": '000001', "correction": "IIIIIIX"},
-                     {"syndrome": '001001', "correction": "IIIIIIY"},
-                     {"syndrome": '001000', "correction": "IIIIIIZ"},
-                     {"syndrome": '000100', "correction": "XIIIIII"},
-                     {"syndrome": '100100', "correction": "YIIIIII"}]
+tab1_x = [{"syndrome": [0, 0, 0], "correction": "IIIIIII"},
+          {"syndrome": [1, 0, 0], "correction": "ZIIIIII"},
+          {"syndrome": [0, 0, 1], "correction": "IZIIIII"},
+          {"syndrome": [1, 0, 1], "correction": "IIZIIII"},
+          {"syndrome": [0, 1, 0], "correction": "IIIZIII"},
+          {"syndrome": [1, 1, 0], "correction": "IIIIZII"},
+          {"syndrome": [0, 1, 1], "correction": "IIIIIZI"},
+          {"syndrome": [1, 1, 1], "correction": "IIIIIIZ"}]
+
+tab2_z = [{"syndrome": [0, 1, 0], "correction": "IIXIIIX"},
+          {"syndrome": [0, 0, 1], "correction": "IIIXIXI"}]
+
+tab2_x = [{"syndrome": [0, 1, 0], "correction": "IIZIIIZ"},
+          {"syndrome": [0, 0, 1], "correction": "IIIZIZI"}]
+
+def lookup(memory):
+    split = memory.split()
+    flag_syndrome = [int(b) for b in split[2]][::-1]
+    unflag_z = [int(b) for b in split[1]][::-1]
+    unflag_x = [int(b) for b in split[0]][::-1]
+
+    flag_syndrome_z = [flag_syndrome[3], flag_syndrome[1], flag_syndrome[2]]
+    flag_syndrome_x = [flag_syndrome[0], flag_syndrome[4], flag_syndrome[5]]
+
+    unflag_syndrome_z = [(unflag_z[0] + unflag_z[2] + unflag_z[4] + unflag_z[6]) % 2,  (unflag_z[3] + unflag_z[4] + unflag_z[5] + unflag_z[6]) % 2, (unflag_z[1] + unflag_z[2] + unflag_z[5] + unflag_z[6]) % 2]
+    unflag_syndrome_x = [(unflag_x[0] + unflag_x[2] + unflag_x[4] + unflag_x[6]) % 2,  (unflag_x[3] + unflag_x[4] + unflag_x[5] + unflag_x[6]) % 2, (unflag_x[1] + unflag_x[2] + unflag_x[5] + unflag_x[6]) % 2]
+    
+    correction_x = "IIIIIII"
+    correction_z = "IIIIIII"
+    # finding correction_x
+    if (flag_syndrome_z == unflag_syndrome_z):
+        for entry in tab1_z:
+            if (entry["syndrome"] == flag_syndrome_z):
+                correction_x = entry["correction"]
+    else:
+        for entry in tab2_z:
+            if (entry["syndrome"] == unflag_syndrome_z):
+                correction_x = entry["correction"]
+        if (correction_x == "IIIIIII"):
+            for entry in tab1_z:
+                if (entry["syndrome"] == unflag_syndrome_z):
+                    correction_x = entry["correction"]
+
+    # finding correction_z
+    if (flag_syndrome_x == unflag_syndrome_x):
+        for entry in tab1_x:
+            if (entry["syndrome"] == flag_syndrome_x):
+                correction_z = entry["correction"]
+    else:
+        for entry in tab2_x:
+            if (entry["syndrome"] == unflag_syndrome_x):
+                correction_z = entry["correction"]
+        if (correction_z == "IIIIIII"):
+            for entry in tab1_x:
+                if (entry["syndrome"] == unflag_syndrome_x):
+                    correction_z = entry["correction"]
                     
-
-flag2_lookup = [{"syndrome": '000001', "correction": "IIIIXXI"},
-                {"syndrome": '000110', "correction": "IIXIXXI"},
-                {"syndrome": '111110', "correction": "IIYIXXI"},
-                {"syndrome": '111001', "correction": "IIZIXXI"},
-                {"syndrome": '000011', "correction": "IIIIIXI"},
-                {"syndrome": '010001', "correction": "IIIIYXI"},
-                {"syndrome": '010011', "correction": "IIIIZXI"}]
-
-
-flag3_lookup = [{"syndrome": '000010', "correction": "IIIIIXX"},
-                {"syndrome": '000111', "correction": "IIIXIXX"},
-                {"syndrome": '101111', "correction": "IIIYIXX"},
-                {"syndrome": '101000', "correction": "IIIZIXX"},
-                {"syndrome": '000001', "correction": "IIIIIIX"},
-                {"syndrome": '011010', "correction": "IIIIIYX"},
-                {"syndrome": '011001', "correction": "IIIIIZX"}]
-
-flag4_lookup = [{"syndrome": '010000', "correction": "IIZZIII"},
-                {"syndrome": '010110', "correction": "IXZZIII"},
-                {"syndrome": '100110', "correction": "IYZZIII"},
-                {"syndrome": '100000', "correction": "IZZZIII"},
-                {"syndrome": '101000', "correction": "IIIZIII"},
-                {"syndrome": '101111', "correction": "IIXZIII"},
-                {"syndrome": '010111', "correction": "IIYZIII"}]
-
-flag5_lookup = [{"syndrome": '001000', "correction": "IIIIZZI"},
-                {"syndrome": '001111', "correction": "IIXIZZI"},
-                {"syndrome": '110111', "correction": "IIYIZZI"},
-                {"syndrome": '110000', "correction": "IIZIZZI"},
-                {"syndrome": '011000', "correction": "IIIIIZI"},
-                {"syndrome": '011010', "correction": "IIIIXZI"},
-                {"syndrome": '001010', "correction": "IIIIYZI"}]
-
-flag6_lookup = [{"syndrome": '010000', "correction": "IIIIIZZ"},
-                {"syndrome": '010101', "correction": "IIIXIZZ"},
-                {"syndrome": '111101', "correction": "IIIYIZZ"},
-                {"syndrome": '111000', "correction": "IIIZIZZ"},
-                {"syndrome": '001000', "correction": "IIIIIIZ"},
-                {"syndrome": '001011', "correction": "IIIIIXZ"},
-                {"syndrome": '010011', "correction": "IIIIIYZ"}]
-
-def allstab_lookup(memory):
-    split = memory[0].split()
-    flags = [split[11], split[9], split[7], split[5], split[3], split[1]]
-    reversed_flags = [f[::-1] for f in flags]
-    syndromes = [split[10], split[8], split[6], split[4], split[2], split[0]]
-    reversed_syndromes = [s[::-1] for s in syndromes]
-    corrections = []
-    for i, flag in enumerate(reversed_flags):
-        correction = "IIIIIII"
-        if (flag == '00'):
-            corrections.append(correction)
-            continue
-        elif (flag == '10'):
-            for entry in weight1err_lookup:
-                if (entry["syndrome"] == reversed_syndromes[i]):
-                    correction = entry["correction"]
-            corrections.append(correction)
-            continue
-        elif (i == 0):
-            for entry in flag1_lookup:
-                if (entry["syndrome"] == reversed_syndromes[i]):
-                    correction = entry["correction"]
-            corrections.append(correction)
-            continue
-        elif (i == 1):
-            for entry in flag2_lookup:
-                if (entry["syndrome"] == reversed_syndromes[i]):
-                    correction = entry["correction"]
-            corrections.append(correction)
-            continue
-        elif (i == 2):
-            for entry in flag3_lookup:
-                if (entry["syndrome"] == reversed_syndromes[i]):
-                    correction = entry["correction"]
-            corrections.append(correction)
-            continue
-        elif (i == 3):
-            for entry in flag4_lookup:
-                if (entry["syndrome"] == reversed_syndromes[i]):
-                    correction = entry["correction"]
-            corrections.append(correction)
-            continue
-        elif (i == 4):
-            for entry in flag5_lookup:
-                if (entry["syndrome"] == reversed_syndromes[i]):
-                    correction = entry["correction"]
-            corrections.append(correction)
-            continue
-        elif (i == 5):
-            for entry in flag6_lookup:
-                if (entry["syndrome"] == reversed_syndromes[i]):
-                    correction = entry["correction"]
-            corrections.append(correction)
-            continue
-            
-    return corrections
+    return correction_x, correction_z
