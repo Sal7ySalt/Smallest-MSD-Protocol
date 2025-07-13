@@ -71,3 +71,13 @@ def lookup(memory):
                 """
                     
     return correction_x, correction_z
+
+
+def transversal_cz_lookup(memory):
+    split = memory.split()
+    block1 = " ".join(split[3:])
+    block2 = " ".join(split[:3])
+    b1_cx, b1_cz = lookup(block1)
+    b2_cx, b2_cz = lookup(block2)
+    return b1_cx, b1_cz, b2_cx, b2_cz
+    
