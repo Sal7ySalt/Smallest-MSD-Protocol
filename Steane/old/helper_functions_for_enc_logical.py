@@ -12,7 +12,7 @@ from qiskit.circuit.library import HGate, UnitaryGate, CXGate
 import matplotlib.pyplot as plt
 
 # our imports
-from steane_ec_decoder import bool_syndrome_flag, syndrome
+from Steane.physical_logical_mapping.steane_ec_decoder import bool_syndrome_flag, syndrome
 
 # 
 def get_noise_list(noise_sweep_type: str, error_list, error_list_size , factor = 10):
