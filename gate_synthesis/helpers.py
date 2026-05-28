@@ -20,7 +20,8 @@ gate_to_id = {
     'Rz(-1*π/4)': 6,
     'Rz(1*π/4)': 7,
     'EMS': 8,
-    'I': 9
+    'I': 9,
+    'EMS1': 10
 }
 
 # Integer-id to gate-name mapping
@@ -34,7 +35,8 @@ id_to_gate = {
     6: 'Rz(-1*π/4)',
     7: 'Rz(1*π/4)',
     8: 'EMS',
-    9: 'I'
+    9: 'I',
+    10: 'EMS1'
 }
 
 
@@ -302,23 +304,6 @@ def generate_sequences(base_gate_set, max_magic_count, previous=None):
 
 ##################################################################################################################
 # Approximating unitaries
-
-# Gate matrices used for synthesis
-gate_dict = {}
-gate_dict['I'] = np.eye(2, dtype='complex')
-gate_dict['X'] = np.array([[0, 1], [1, 0]])
-gate_dict['Y'] = np.array([[0, -1j], [1j, 0]])
-gate_dict['Z'] = np.array([[1, 0], [0, -1]])
-gate_dict['H'] = 1/np.sqrt(2) * np.array([[1, 1], [1, -1]])
-gate_dict['S'] = rz_gate(np.pi/2)
-gate_dict['Sdg'] = rz_gate(-np.pi/2)
-gate_dict['Rz(-1*π/4)'] = np.array(TdgGate().to_matrix())
-gate_dict['Rz(1*π/4)'] = np.array(TGate().to_matrix())
-gate_dict['EMS'] = np.array([
-    [np.cos(theta/2), -np.sin(theta/2)],
-    [np.sin(theta/2), np.cos(theta/2)]
-])
-
 
 def distance(U, V):
     # Distance between two SU(2) key vectors
