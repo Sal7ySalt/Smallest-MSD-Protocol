@@ -16,11 +16,17 @@ Simulation code, data and figures for the 2-qubit ([[2,1,1]]) and 3-qubit
 ## Quick start
 
 ```bash
-# 1. Environment. The repository has no requirements file; this suggested setup
-#    matches the versions recorded under "Environment".
+# 1. Environment. One conda environment, `qiskit`, runs every notebook and
+#    script; the versions match those recorded under "Environment".
 conda create -n qiskit python=3.13
 conda activate qiskit
-pip install qiskit==2.5.0 qiskit-aer==0.17.2 numpy scipy matplotlib sympy mpmath scikit-learn pylatexenc jupyter
+pip install qiskit==2.5.0 qiskit-aer==0.17.2 numpy scipy matplotlib sympy mpmath \
+    scikit-learn pylatexenc line_profiler jupyter ipykernel
+# Register the environment as the Jupyter kernel named `qiskit`, which every
+# notebook's metadata selects.
+python -m ipykernel install --user --name qiskit --display-name qiskit
+# The plotting cells set `text.usetex = True`: install a LaTeX distribution that
+# provides `latex` and `dvipng` (e.g. MacTeX / TeX Live) and put it on PATH.
 
 # 2. Regenerate a figure from the saved data, e.g. the 3-qubit logical-level plot
 cd notebooks/three_qubit/logical_level
@@ -54,19 +60,25 @@ archive/                 superseded Steane experiments; not used for the results
 ```
 
 Each notebook begins with a markdown cell that states its purpose, inputs,
-outputs, conventions and any known problems with re-running it. Each module in
+outputs and conventions. Each module in
 `src/msd` has a module docstring with the circuit layout and noise model.
 
 ## Environment
 
-The saved outputs were produced in a conda environment named `qiskit` (the
-notebooks' kernel name). That environment has Python 3.13, Qiskit 2.5.0
+All notebooks use the Jupyter kernel `qiskit`, backed by the conda
+environment of the same name. That environment has Python 3.13, Qiskit 2.5.0
 (some notebook outputs show 2.4.1), Qiskit Aer 0.17.2, NumPy 2.4,
-SciPy 1.17, Matplotlib 3.10, SymPy 1.14, mpmath 1.3 and scikit-learn 1.8.
-`notebooks/gate_synthesis/algorithm.ipynb` also imports `line_profiler`.
+SciPy 1.17, Matplotlib 3.10, SymPy 1.14, mpmath 1.3, scikit-learn 1.8,
+pylatexenc (circuit drawings with `draw('mpl')`), line_profiler (imported by
+`notebooks/gate_synthesis/algorithm.ipynb`) and ipykernel. This single
+environment also covers the notebooks that were previously run under other
+kernels: `two_qubit/distillable_magic_states.ipynb` (`base`; NumPy, SciPy,
+SymPy) and `two_qubit/physical_level/creating_plots.ipynb` (`stim`; NumPy,
+SciPy, mpmath, Matplotlib, Qiskit, Qiskit Aer; it does not import `stim`).
 The plotting cells set `text.usetex = True` and therefore need a LaTeX
-installation. The repository pins no versions; the list above records what
-was installed, not tested minimums. The archived notebooks additionally use
+installation with `latex` and `dvipng`. The repository pins no versions
+beyond Qiskit and Qiskit Aer; the list above records what was installed, not
+tested minimums. The archived notebooks additionally use
 `pandas`, `lmfit` and an older Qiskit API.
 
 ## Conventions used throughout
@@ -82,7 +94,7 @@ was installed, not tested minimums. The archived notebooks additionally use
 | Qubit order | Qiskit is little-endian. In NumPy code, the leftmost `np.kron` factor is the highest-index Qiskit qubit. Exception: `three_qubit/idealized_performance/threshold.ipynb` is pure NumPy and calls the leftmost factor "qubit 0". |
 | Steane blocks | Block-local qubit $j$ is global qubit `start + j`. Stabilizers act on {0,1,2,3}, {1,2,4,5} and {2,3,5,6}; the logical $\bar Z$ check uses {0,1,4}. |
 | Uncertainties | Notebooks: 95% normal approximation, $1.96\sqrt{F(1-F)/N_\text{acc}}$. Sweep scripts and their plot: ±1 SEM from $\sum F^2$. Phase estimation: Holevo standard deviation of bootstrap estimates. |
-| Error budget | At each rate, a component's output error rate as a fraction of the sum of the 1Q (or H), 2Q (CX/CZ) and Meas outputs, averaged over the rates. Each component run also includes the input noise. |
+| Error budget | Each component run (1Q or H, 2Q = CX/CZ, Meas) also carries the input noise, which alone is the noise-free "Ideal" run. A component's contribution is its excess output error rate over that baseline, $\Delta_c = \varepsilon_c - \varepsilon_\text{Ideal}$ (set to 0 if negative); to first order these excesses add. At each rate the fractions are $\Delta_c/\sum_{c'}\Delta_{c'}$, and they are averaged over the rates. |
 | Randomness | No fixed seeds anywhere. Aer seeds itself, and the phase-estimation and gate-synthesis code seeds from `time.time_ns()` or draws unseeded Haar unitaries. Saved `.npz` files are the reference results; re-runs agree only statistically. |
 
 ## From inputs to figures

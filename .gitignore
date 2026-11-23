@@ -1,4 +1,42 @@
+# Python
 __pycache__/
 *.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+.env
+
+# Jupyter
 .ipynb_checkpoints/
+
+# Profiling output (line_profiler / cProfile)
+*.lprof
+*.prof
+
+# Generated simulation outputs that are not part of the published data
+# - partial file written while a sweep script saves (renamed on completion)
+*_tmp.npz
+# - gate-synthesis sequence databases (large; rebuilt by algorithm.ipynb)
+*.pkl
+# - local small-batch runs from 21_qubits.ipynb (the figure uses cluster_*.npz)
+data/three_qubit/logical_level/logical_msd_*_errors.npz
+# - local phase-estimation run from qpe/exotic_set1.ipynb (the figure uses *_max10.npz)
+data/gate_synthesis/qpe/exotic_set1_max7.npz
+
+# Editors and OS files
+.idea/
+*.swp
+*~
 .DS_Store
+Thumbs.db
+
+# Local Claude Code settings
+.claude/settings.local.json

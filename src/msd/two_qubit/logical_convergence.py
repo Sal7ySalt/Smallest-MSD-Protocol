@@ -28,10 +28,9 @@ Arguments: p1 = one-qubit noise parameter, p2 = two-qubit noise parameter,
 spam0 = P(read 1 | 0), spam1 = P(read 0 | 1). Some functions accept
 parameters they do not use, so call signatures stay aligned with the notebooks.
 
-Post-selection caveat: Aer's conditional-save keys encode all 13 classical
-bits (B's 7 bits plus both 3-bit syndrome registers). The parsing below takes
-the leading 7 characters of the zero-padded binary string, which are B's bits
-only when both syndrome registers read 0. See the README, "Known caveats".
+Post-selection: Aer's conditional-save keys encode all 13 classical bits
+(B's 7 bits in clbits 0-6, then the X- and Z-syndrome registers of A in
+clbits 7-12). Only the low 7 bits (B's measurement) decide acceptance.
 """
 import os
 from qiskit import QuantumCircuit, ClassicalRegister
@@ -268,9 +267,10 @@ def logical_msd_all_errors(num_shots, p1, p2, spam0, spam1):
     accepted = 0
 
     for key, sv_list in res_statevectors.items():
-        # Leading 7 characters = B's bits 6..0 only when the syndrome registers
-        # are 0 (see the module docstring).
-        binary_string = format(int(key, 16), 'b').zfill(7)
+        # The key encodes all 13 classical bits; B's measurement is clbits 0-6,
+        # the low 7 bits. Mask them out so the syndrome registers of block A
+        # (clbits 7-12) never enter the post-selection decision.
+        binary_string = format(int(key, 16) & 0x7F, '07b')
         
         block_syndrome = str(binary_string)[0:7]
         
@@ -380,9 +380,10 @@ def logical_msd_no_errors(num_shots, p1):
     accepted = 0
 
     for key, sv_list in res_statevectors.items():
-        # Leading 7 characters = B's bits 6..0 only when the syndrome registers
-        # are 0 (see the module docstring).
-        binary_string = format(int(key, 16), 'b').zfill(7)
+        # The key encodes all 13 classical bits; B's measurement is clbits 0-6,
+        # the low 7 bits. Mask them out so the syndrome registers of block A
+        # (clbits 7-12) never enter the post-selection decision.
+        binary_string = format(int(key, 16) & 0x7F, '07b')
         
         block_syndrome = str(binary_string)[0:7]
         
@@ -499,9 +500,10 @@ def logical_msd_meas_errors(num_shots, p1, spam0, spam1):
     accepted = 0
 
     for key, sv_list in res_statevectors.items():
-        # Leading 7 characters = B's bits 6..0 only when the syndrome registers
-        # are 0 (see the module docstring).
-        binary_string = format(int(key, 16), 'b').zfill(7)
+        # The key encodes all 13 classical bits; B's measurement is clbits 0-6,
+        # the low 7 bits. Mask them out so the syndrome registers of block A
+        # (clbits 7-12) never enter the post-selection decision.
+        binary_string = format(int(key, 16) & 0x7F, '07b')
         
         block_syndrome = str(binary_string)[0:7]
         
@@ -611,9 +613,10 @@ def logical_msd_2q_errors(num_shots, p1, p2):
     accepted = 0
 
     for key, sv_list in res_statevectors.items():
-        # Leading 7 characters = B's bits 6..0 only when the syndrome registers
-        # are 0 (see the module docstring).
-        binary_string = format(int(key, 16), 'b').zfill(7)
+        # The key encodes all 13 classical bits; B's measurement is clbits 0-6,
+        # the low 7 bits. Mask them out so the syndrome registers of block A
+        # (clbits 7-12) never enter the post-selection decision.
+        binary_string = format(int(key, 16) & 0x7F, '07b')
         
         block_syndrome = str(binary_string)[0:7]
         
@@ -723,9 +726,10 @@ def logical_msd_1q_errors(num_shots, p1):
     accepted = 0
 
     for key, sv_list in res_statevectors.items():
-        # Leading 7 characters = B's bits 6..0 only when the syndrome registers
-        # are 0 (see the module docstring).
-        binary_string = format(int(key, 16), 'b').zfill(7)
+        # The key encodes all 13 classical bits; B's measurement is clbits 0-6,
+        # the low 7 bits. Mask them out so the syndrome registers of block A
+        # (clbits 7-12) never enter the post-selection decision.
+        binary_string = format(int(key, 16) & 0x7F, '07b')
         
         block_syndrome = str(binary_string)[0:7]
         

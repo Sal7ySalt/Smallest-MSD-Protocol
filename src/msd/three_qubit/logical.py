@@ -24,11 +24,9 @@ Arguments: p1 = one-qubit noise parameter, p2 = two-qubit noise parameter,
 spam0 = P(read 1 | 0), spam1 = P(read 0 | 1). The meas/2q/1q variants take all
 four so their signatures match; each uses only the noise it names.
 
-Post-selection caveat: the conditional-save keys encode all 20 classical bits
-(14 measurement bits plus the two 3-bit syndrome registers). The parsing
-takes the leading 14 characters of the zero-padded binary string, which are
-the measurement bits only when both syndrome registers read 0. See the
-README, "Known caveats".
+Post-selection: the conditional-save keys encode all 20 classical bits (the
+14 measurement bits of A and B in clbits 0-13, then the two 3-bit syndrome
+registers of C in clbits 14-19). Only the low 14 bits decide acceptance.
 """
 import os
 from qiskit import QuantumCircuit, ClassicalRegister
@@ -238,10 +236,12 @@ def logical_msd_all_errors(num_shots, p1, p2, spam0, spam1):
     accepted = 0
 
     for key, sv_list in res_statevectors.items():
-        # [0:7] holds clbits 13..7 (block B) and [7:14] clbits 6..0 (block A)
-        # when the syndrome registers are 0. Both halves get identical checks,
-        # so the "block1"/"block2" labels are interchangeable.
-        binary_string = format(int(key, 16), 'b').zfill(14)
+        # The key encodes all 20 classical bits; blocks A and B are clbits 0-13,
+        # the low 14 bits. Mask them out so the syndrome registers of block C
+        # (clbits 14-19) never enter the post-selection decision. After masking,
+        # [0:7] holds clbits 13..7 (block B) and [7:14] clbits 6..0 (block A).
+        # Both halves get identical checks, so the labels are interchangeable.
+        binary_string = format(int(key, 16) & 0x3FFF, '014b')
         
         block1_syndrome = str(binary_string)[0:7]
         block2_syndrome = str(binary_string)[7:14]
@@ -354,10 +354,12 @@ def logical_msd_no_errors(num_shots, p1):
     sumfid = 0
     accepted = 0
     for key, sv_list in res_statevectors.items():
-        # [0:7] holds clbits 13..7 (block B) and [7:14] clbits 6..0 (block A)
-        # when the syndrome registers are 0. Both halves get identical checks,
-        # so the "block1"/"block2" labels are interchangeable.
-        binary_string = format(int(key, 16), 'b').zfill(14)
+        # The key encodes all 20 classical bits; blocks A and B are clbits 0-13,
+        # the low 14 bits. Mask them out so the syndrome registers of block C
+        # (clbits 14-19) never enter the post-selection decision. After masking,
+        # [0:7] holds clbits 13..7 (block B) and [7:14] clbits 6..0 (block A).
+        # Both halves get identical checks, so the labels are interchangeable.
+        binary_string = format(int(key, 16) & 0x3FFF, '014b')
         
         block1_syndrome = str(binary_string)[0:7]
         block2_syndrome = str(binary_string)[7:14]
@@ -442,10 +444,12 @@ def logical_msd_meas_errors(num_shots, p1, p2, spam0, spam1):
     sumfid = 0
     accepted = 0
     for key, sv_list in res_statevectors.items():
-        # [0:7] holds clbits 13..7 (block B) and [7:14] clbits 6..0 (block A)
-        # when the syndrome registers are 0. Both halves get identical checks,
-        # so the "block1"/"block2" labels are interchangeable.
-        binary_string = format(int(key, 16), 'b').zfill(14)
+        # The key encodes all 20 classical bits; blocks A and B are clbits 0-13,
+        # the low 14 bits. Mask them out so the syndrome registers of block C
+        # (clbits 14-19) never enter the post-selection decision. After masking,
+        # [0:7] holds clbits 13..7 (block B) and [7:14] clbits 6..0 (block A).
+        # Both halves get identical checks, so the labels are interchangeable.
+        binary_string = format(int(key, 16) & 0x3FFF, '014b')
         
         block1_syndrome = str(binary_string)[0:7]
         block2_syndrome = str(binary_string)[7:14]
@@ -526,10 +530,12 @@ def logical_msd_2q_errors(num_shots, p1, p2, spam0, spam1):
     sumfid = 0
     accepted = 0
     for key, sv_list in res_statevectors.items():
-        # [0:7] holds clbits 13..7 (block B) and [7:14] clbits 6..0 (block A)
-        # when the syndrome registers are 0. Both halves get identical checks,
-        # so the "block1"/"block2" labels are interchangeable.
-        binary_string = format(int(key, 16), 'b').zfill(14)
+        # The key encodes all 20 classical bits; blocks A and B are clbits 0-13,
+        # the low 14 bits. Mask them out so the syndrome registers of block C
+        # (clbits 14-19) never enter the post-selection decision. After masking,
+        # [0:7] holds clbits 13..7 (block B) and [7:14] clbits 6..0 (block A).
+        # Both halves get identical checks, so the labels are interchangeable.
+        binary_string = format(int(key, 16) & 0x3FFF, '014b')
         
         block1_syndrome = str(binary_string)[0:7]
         block2_syndrome = str(binary_string)[7:14]
@@ -609,10 +615,12 @@ def logical_msd_1q_errors(num_shots, p1, p2, spam0, spam1):
     sumfid = 0
     accepted = 0
     for key, sv_list in res_statevectors.items():
-        # [0:7] holds clbits 13..7 (block B) and [7:14] clbits 6..0 (block A)
-        # when the syndrome registers are 0. Both halves get identical checks,
-        # so the "block1"/"block2" labels are interchangeable.
-        binary_string = format(int(key, 16), 'b').zfill(14)
+        # The key encodes all 20 classical bits; blocks A and B are clbits 0-13,
+        # the low 14 bits. Mask them out so the syndrome registers of block C
+        # (clbits 14-19) never enter the post-selection decision. After masking,
+        # [0:7] holds clbits 13..7 (block B) and [7:14] clbits 6..0 (block A).
+        # Both halves get identical checks, so the labels are interchangeable.
+        binary_string = format(int(key, 16) & 0x3FFF, '014b')
         
         block1_syndrome = str(binary_string)[0:7]
         block2_syndrome = str(binary_string)[7:14]
