@@ -1,3 +1,30 @@
+"""Sweep the Steane-encoded 2-qubit MSD circuit over physical error rates: Ideal ("no errors") case.
+
+Calls ``logical_msd_no_errors`` from ``logical_depolarizing.py``: depolarizing noise of strength p on the RY(theta) state preparation only; the rest of the circuit is noiseless.
+A single parameter p sets every active noise channel. p is the parameter of
+Qiskit's ``depolarizing_error`` (and the readout-flip probability), swept over
+``error_rates`` = 9 log-spaced values from 1e-5 to 1e-3.
+
+Run from anywhere (the path is resolved relative to this file):
+
+    python src/msd/two_qubit/no_errors.py
+
+Output: ``data/two_qubit/logical_level/depolarizing/logical_msd_no_errors_sweep.npz`` with
+arrays indexed by error rate:
+    error_rates       physical error rate p
+    sum_fid_list      sum of output fidelities over accepted shots
+    sum_fid2_list     sum of squared fidelities (for the SEM)
+    accepted_list     number of post-selected (accepted) shots
+    total_shots_list  number of shots simulated
+
+The script accumulates: each run adds ``num_shots`` shots per rate to the
+totals already in the file and saves after every rate, so it can be stopped
+and restarted. Delete the file to start from scratch. No random seed is set;
+Aer draws a fresh seed for every batch, so repeated runs are statistically,
+not bitwise, reproducible. These files feed the last two cells of
+``notebooks/two_qubit/logical_level/creating_plots.ipynb``
+(``figures/2Q_logical_plots.png``).
+"""
 import os
 import sys
 from pathlib import Path
@@ -79,10 +106,13 @@ def main():
     accepted_list = accepted_list[order]
     total_shots_list = total_shots_list[order].astype(int)
 
+    # i indexes the saved arrays; matching by value lets runs with different
+    # error_rates lists share one file.
     for p in error_rates:
         i = np.flatnonzero(np.isclose(rates, p, rtol=1e-9, atol=0))[0]
 
         for _ in range(num_shots // batch_shots):
+            # Returns sums over the accepted shots of this batch only.
             sumfid, sumfid2, accepted = logical_msd_no_errors(batch_shots, p)
             sum_fid_list[i] += sumfid
             sum_fid2_list[i] += sumfid2

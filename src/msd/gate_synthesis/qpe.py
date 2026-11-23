@@ -1,3 +1,29 @@
+"""Single-ancilla phase estimation with gates approximated from a SequenceDB.
+
+Benchmark used in ``notebooks/gate_synthesis/qpe/*.ipynb``. Model: a
+one-qubit Hamiltonian H = h3*I + h1*Z + h2*X evolved for time t = pi/(8 h1)
+with one first-order Trotter step, U = exp(-i h2 X t) exp(-i h1 Z t).
+The eigenphase is phi = -(E - h3) t, so an estimate phi gives E = h3 - phi/t;
+the notebooks compare it with the reference E_FCI = -1.13731 Ha.
+
+Circuit (qubit 0 = ancilla, qubit 1 = system): prepare |+> on the ancilla and
+|1> on the system (``state_prep``; alpha0 = alpha1 = 0), apply controlled-U
+k times, apply Rz(beta) on the ancilla, then H and measure. Ideally
+P(m | phi) = (1 + cos(k phi + beta - m pi))/2.
+Controlled-U is built as Rz(a) . CX . Rz(-a) . CX on the target (= controlled
+Rz(2a)), once with a = h1 t and once inside H ... H (giving the X rotation).
+In ``algorithm`` the four Rz(+-h_i t) gates and Rz(beta) are replaced by
+their nearest database approximations; H, X and CX stay exact.
+
+``algorithm`` draws N_s random settings (k uniform in 1..kmax, beta in
+{0, pi/2}) and records one shot each. It then bootstraps R resamples, takes
+the maximum-likelihood phase of each on a 20 000-point grid, and returns the
+circular mean with the Holevo variance 1/|<e^{i phi}>|^2 - 1.
+
+Seeds come from ``time.time_ns()`` and the Aer simulator is unseeded, so runs
+are not bitwise reproducible; the saved data/gate_synthesis/qpe/*.npz files
+hold the exact outcomes behind the reported numbers.
+"""
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit_aer import AerSimulator
 from qiskit.circuit.library import RZGate, UnitaryGate
@@ -8,6 +34,10 @@ from msd.gate_synthesis.sequences import key_from_U
 
 
 # Defining global variables
+# theta / theta_star: exotic magic-state angles of the 3- and 2-qubit protocols.
+# h1, h2, h3: Hamiltonian coefficients (Ha); t: evolution time per U.
+# alpha0, alpha1: system-state preparation angles (0 here, i.e. |1>).
+# kmax: largest power of U; tilde_phi_list: grid for the likelihood maximum.
 theta = np.arctan(np.sqrt((np.sqrt(5) - 1) / 2))
 x_star = 1/3 * (-2 + np.cbrt(19-3*np.sqrt(33)) + np.cbrt(19+3*np.sqrt(33)))
 theta_star = np.arcsin(x_star)
@@ -22,6 +52,9 @@ tilde_phi_list = np.linspace(0, 2 * np.pi, 20_000, endpoint=False)
 
 
 # Mappings
+# Must match the ids in sequences.gate_to_id. name_to_gate gives the matrices
+# used to rebuild a sequence; they equal the gates in the database up to a
+# global phase (e.g. 'Rz(1*π/4)' here is diag(1, e^{i pi/4}) = T).
 id_to_gate = {
     0: 'X',
     1: 'Y',
@@ -52,6 +85,7 @@ name_to_gate = {
 
 
 def find_approximation(nn, unitary):
+    # Single nearest stored key (Euclidean), with no magic-count criterion.
     euclidean_dist, idxs = nn.kneighbors(np.array(key_from_U(unitary), dtype=float).reshape(1, -1), 1, return_distance=True)
     return euclidean_dist, idxs
 
@@ -66,6 +100,9 @@ def create_approx_gate(unitary, nn, base_gate_set):
     return temp
 
 def approx_cu(base_gate_set, nn):
+    # Note: base_gate_set here is the SequenceDB, not the gate list.
+    # Returns [Rz(h1 t), Rz(-h1 t), Rz(h2 t), Rz(-h2 t)] as approximated
+    # UnitaryGates; each negative angle is the adjoint of the positive one.
     approx_gate_list = []
     # Approximating Rz(h1*t)
     unitary1 = np.asarray(RZGate(h1*t).to_matrix(), dtype=complex)
@@ -146,6 +183,8 @@ def qpe(qc, k, beta, cu_gate_list, beta_gate_dict):
     qc.h(0)
     qc.measure([0], [0])
     
+# Log-likelihood log Q(phi) = sum_j log P(m_j | phi; k_j, beta_j). Probabilities
+# are clipped at eps to avoid log(0).
 def calculate_Q(k_list, beta_list, m_list, tilde_phi, eps=1e-15):
     k_array = np.asarray(k_list, dtype=float)
     beta_array = np.asarray(beta_list, dtype=float)
@@ -166,6 +205,8 @@ def estimate_phase(k_list, beta_list, m_list):
     return tilde_phi_list[max_idx]
 
 # Returns [-pi, pi)
+# Circular mean of angles with the Holevo variance 1/R^2 - 1, where R is the
+# length of the mean unit vector.
 def circular_mean0(phi_list):
     phi_array = np.asarray(phi_list, dtype=float)
 
@@ -193,6 +234,8 @@ def circular_mean1(phi_list):
 
 
 # The algorithm
+# base_gate_set: SequenceDB; nn: its NearestNeighbors index; N_s: number of
+# single-shot experiments; R: number of bootstrap resamples.
 def algorithm(base_gate_set, nn, N_s, R):
     rng = np.random.default_rng(seed=time.time_ns())
 

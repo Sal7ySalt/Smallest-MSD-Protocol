@@ -1,3 +1,7 @@
+# ARCHIVED (not used for the paper's results). Earlier class-based Steane
+# encoder/decoder blocks (SteaneEnc, SteaneDec) and noisy gate blocks; imported
+# by State_tomography.ipynb in this folder. Superseded by encoding() in
+# src/msd/three_qubit/logical.py.
 # Welcome to the steane encoding module! 
 
 from qiskit import QuantumCircuit

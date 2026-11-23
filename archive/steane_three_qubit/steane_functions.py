@@ -1,3 +1,7 @@
+# ARCHIVED (not used for the paper's results). Earlier 7- and 8-qubit Steane
+# preparations of RY(theta)|0> (theta as in src/msd/three_qubit/logical.py) and
+# fidelity-sweep helpers; imported by State_tomography.ipynb in this folder.
+# Needs pandas and lmfit in addition to the main environment.
 # steane functions
 from qiskit import QuantumCircuit
 import numpy as np

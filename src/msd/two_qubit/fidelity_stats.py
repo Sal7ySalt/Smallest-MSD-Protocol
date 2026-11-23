@@ -1,3 +1,9 @@
+"""Combine per-batch fidelity tallies into a mean, SEM and 95% interval.
+
+Used by the sweep scripts (no_errors.py, ..., all_errors.py) to print progress.
+Each logical_msd_* function in logical_depolarizing.py returns
+(sum of F, sum of F^2, accepted shots) over the shots it kept.
+"""
 import numpy as np
 
 

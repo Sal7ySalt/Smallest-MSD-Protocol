@@ -1,3 +1,7 @@
+# ARCHIVED (not used for the paper's results). Earlier helpers for
+# logical-error-rate sweeps. The import of Steane.physical_logical_mapping
+# below refers to a package that is not in this repository, so this module
+# does not import as-is.
 ## helper functions for encoding_logical_error_rate
 
 # general imports

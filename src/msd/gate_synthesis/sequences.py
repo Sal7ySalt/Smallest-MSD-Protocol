@@ -1,3 +1,26 @@
+"""Enumerate single-qubit Clifford + magic-gate sequences and look up approximations.
+
+Workflow (see ``notebooks/gate_synthesis/algorithm.ipynb``):
+  1. Build a base gate set: a list of dicts
+     {"gate": 2x2 matrix, "t_count": int, "id": int, "magic_gate": bool}.
+     Cliffords used: X, Y, Z, H, S, Sdg. Magic gates: T/T^dagger
+     (``tau_set(3)``) plus one or both "exotic" gates RY(theta) ('EMS', the
+     3-qubit protocol's state) and RY(theta_star) ('EMS1', the 2-qubit one).
+  2. ``generate_sequences`` grows a tree of products breadth-first, alternating
+     a single Clifford gate with a single magic gate, and stores each distinct
+     unitary once (``SequenceDB``), up to a cutoff on the magic count.
+  3. ``db_to_nn`` indexes the stored unitaries; ``closest_neighbors`` returns
+     the stored unitary within distance epsilon of a target that has the fewest
+     magic gates (ties broken by distance).
+
+Unitaries are compared modulo global phase. ``key_from_U`` maps U to the unit
+4-vector (a, x, y, z) with U ~ aI + i(xX + yY + zZ) in SU(2); the sign is fixed
+so that the first nonzero entry is positive. The distance between keys u, v is
+sqrt(1 - |u . v|) = sqrt(1 - |Tr(U^dagger V)|/2).
+
+Magic count = number of magic gates in the sequence (each counts as 1,
+whatever its "t_count" field says).
+"""
 import numpy as np
 from typing import List, Any
 from sklearn.neighbors import NearestNeighbors
@@ -7,9 +30,12 @@ import pickle
 from qiskit.quantum_info import random_unitary
 
 # Exotic magic-state angle
+# (3-qubit protocol: tan(theta)^2 = (sqrt(5) - 1)/2; defined here but not used below)
 theta = np.arctan(np.sqrt((np.sqrt(5) - 1) / 2))
 
 # Gate-name to integer-id mapping
+# Ids are stored in SequenceDB.last_gate, so they must stay fixed for saved
+# databases (*.pkl) to remain readable. 'Rz(k*π/4)' is the T-type rotation.
 gate_to_id = {
     'X': 0,
     'Y': 1,
@@ -42,15 +68,20 @@ id_to_gate = {
 
 def cost_function1(n: int) -> int:
     # Magic-gate cost model
+    # Cost assigned to the rotation family Rz(k*pi/2^(n-1)); n = 3 (T gates)
+    # gives 1. Stored as "t_count" only; generate_sequences counts each magic
+    # gate as 1.
     return (4 - 3*2**(3-n))
 
 
 def rz_gate(theta: float):
     # Single-qubit Z rotation
+    # Rz(theta) = diag(e^{-i theta/2}, e^{i theta/2}), Qiskit's convention.
     return np.array([[np.exp(-1j * theta/2), 0], [0, np.exp(1j * theta/2)]])
 
 
 # Return allowed odd k values for tau rotations
+# e.g. denom = 4 -> [-1, 1], giving Rz(+-pi/4) = T, T^dagger up to phase.
 def odd_k(denom: int) -> List[int]:
     highest = denom//2 - 1
     return list(range(-highest, highest+1, 2))
@@ -58,6 +89,7 @@ def odd_k(denom: int) -> List[int]:
 
 def tau_set(n: int):
     # Build tau gate set for a given denominator
+    # Magic gates Rz(k*pi/2^(n-1)) for odd k. Only n = 3 has ids in gate_to_id.
     tau = []
     denom = 2**(n-1)
     k_list = odd_k(denom)
@@ -119,6 +151,9 @@ def rebuild_U(key):
 # Database structure
 
 class SequenceDB:
+    # Tree of sequences stored as parallel lists: node i is reached from its
+    # parent by left-multiplying with gate last_gate[i]. Only the key (not the
+    # matrix) is stored; matrices are rebuilt by walking back to the root.
     def __init__(self):
         # Store each unique unitary and how it was generated
         self.index_of = {}      # key -> integer index
@@ -186,6 +221,7 @@ class SequenceDB:
 
     def save(self, filepath):
         # Save compressed database state
+        # Pickle of the lists/arrays above; index_of is rebuilt on load.
         state = {
             "keys": self.keys,
             "parent": np.asarray(self.parent, dtype=np.int32),
@@ -217,6 +253,7 @@ class SequenceDB:
 
 def reconstruct_unitary_from_index(db, idx, gate_matrix):
     # Reconstruct unitary corresponding to database index
+    # Gates are applied in sequence order, so U = g_last ... g_2 g_1.
     U = np.eye(2, dtype=complex)
     gate_ids = []
 
@@ -232,6 +269,11 @@ def reconstruct_unitary_from_index(db, idx, gate_matrix):
 
 def generate_sequences(base_gate_set, max_magic_count, previous=None):
     # Generate all reachable sequences up to a magic-count cutoff
+    # Breadth-first: node i is expanded once, in insertion order, by appending
+    # one gate. A new product is stored only if its key was not seen before,
+    # so each unitary keeps the first sequence that reached it. Passing a
+    # previous database extends it to a larger cutoff (every node is expanded
+    # again; duplicates are skipped).
     clifford_gates = [g for g in base_gate_set if not g["magic_gate"]]
     magic_gates = [g for g in base_gate_set if g["magic_gate"]]
 
@@ -277,6 +319,8 @@ def generate_sequences(base_gate_set, max_magic_count, previous=None):
         last_gate_id = db.last_gate[i]
 
         # Alternate Clifford and magic layers
+        # After a Clifford (or the root) only magic gates may follow and vice
+        # versa, so at most one listed Clifford sits between magic gates.
         last_was_clifford = (last_gate_id == -1) or (last_gate_id not in magic_ids)
         candidates = magic_gates if last_was_clifford else clifford_gates
 
@@ -307,6 +351,7 @@ def generate_sequences(base_gate_set, max_magic_count, previous=None):
 
 def distance(U, V):
     # Distance between two SU(2) key vectors
+    # Takes keys (4-vectors), not matrices: sqrt(1 - |U . V|).
     if np.allclose(U, V):
         return 0
     else:
@@ -315,6 +360,7 @@ def distance(U, V):
 
 def db_to_nn(db):
     # Build nearest-neighbor index from database keys
+    # Euclidean distance between unit keys: |u - v|^2 = 2(1 - u . v).
     keys = np.asarray(db.keys, dtype=float)
 
     nn = NearestNeighbors(algorithm="auto", metric="euclidean")
@@ -352,6 +398,10 @@ def unitary_from_key(db, key, gate_matrix):
 
 def closest_neighbors(unitary, db, nn, epsilon, base_gate_set):
     # Search for database unitaries within epsilon of target unitary
+    # If sqrt(1 - u . v) <= epsilon then |u - v| <= sqrt(2) epsilon, so a
+    # Euclidean radius search of sqrt(2) epsilon finds every candidate; each is
+    # then checked against the exact distance. Returns
+    # (magic count, distance, unitary, gate-id sequence) or four Nones.
     r = np.sqrt(2) * epsilon
     target_key = np.array(key_from_U(unitary), dtype=float).reshape(1, -1)
 

@@ -1,3 +1,6 @@
+# ARCHIVED (not used for the paper's results). Interactive helper: reads a
+# 7-entry list of +/-1 X-basis outcomes from stdin and reports which qubit to
+# correct. The current decoder is ideal_recovery() in src/msd/*/logical*.py.
 # 1 input list, length 7 (each qubit)
 # We only measure in the X-basis, so can only correct Z-errors
 
