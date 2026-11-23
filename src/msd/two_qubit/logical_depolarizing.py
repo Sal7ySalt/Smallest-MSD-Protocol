@@ -39,7 +39,7 @@ from qiskit_aer.noise import NoiseModel, depolarizing_error, ReadoutError
 from qiskit.circuit.library import HGate, UnitaryGate, CXGate, RYGate, XGate, ZGate
 
 
-# Target magic state |T*> = RY(theta)|0>, Bloch vector (x_star, 0, z_star) with
+# Target magic state |psi_star> = RY(theta)|0>, Bloch vector (x_star, 0, z_star) with
 # x_star = sin(theta) ~ 0.8393: the nontrivial fixed point of the [[2,1,1]]
 # protocol's Bloch map (x, z) -> (2z, x^2)/(1 + z^2).
 x_star = 1/3 * (-2 + np.cbrt(19-3*np.sqrt(33)) + np.cbrt(19+3*np.sqrt(33)))

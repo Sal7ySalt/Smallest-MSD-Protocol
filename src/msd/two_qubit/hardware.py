@@ -7,7 +7,7 @@ import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister 
 from qiskit_aer import AerSimulator
 
-# Target magic state of the 2-qubit protocol: |T*> = RY(theta_star)|0>, with
+# Target magic state of the 2-qubit protocol: |psi_star> = RY(theta_star)|0>, with
 # Bloch vector (x_star, 0, z_star) ~ (0.8393, 0, 0.5437). z_star is the real
 # root of z^3 + z^2 + z = 1, and the state is the nontrivial fixed point of the
 # [[2,1,1]] Bloch map (x, z) -> (2z, x^2) / (1 + z^2).
